@@ -2,3 +2,10 @@ INSERT INTO clients (name, lastname, email, create_at, phone, phone1, street, su
 INSERT INTO clients (name, lastname, email, create_at, phone, phone1, street, suburb, house_number, postal_code) VALUES('Sua', 'Garibay', 'suagaribay@gmail.com', '2022-02-01', '646-255-43-76','646-234-12-54','mexicali', '28 de Agosto', '505', '22835');
 INSERT INTO clients (name, lastname, email, create_at, phone, phone1, street, suburb, house_number, postal_code) VALUES('Levi', 'Torres', 'levitorres@gmail.com', '2022-05-02', '646-123-34-75','','Oaxaca', 'Revolucion', '123', '22845');
 INSERT INTO clients (name, lastname, email, create_at, phone, phone1, street, suburb, house_number, postal_code) VALUES('Joram', 'Torres', 'joramtorres@gmail.com', '2022-07-30', '646-654-45-09','646-212-67-65','Chipalcingo', 'Azteca', '59', '22456');
+INSERT INTO washers(brand, specs, color, status, create_at)VALUES('Whirpool', 'especificaciones que puede tener la lavadora', 'blanca',true,'2022-01-01');
+INSERT INTO washers(brand, specs, color, status, create_at)VALUES('Maytag', 'especificaciones que puede tener la lavadora', 'crema',false,'2022-05-20');
+INSERT INTO washers(brand, specs, color, status, create_at)VALUES('Maytag', 'especificaciones que puede tener la lavadora', 'negra',true,'2022-01-01');
+INSERT INTO washers(brand, specs, color, status, create_at)VALUES('GeneralElectric', 'especificaciones que puede tener la lavadora', 'negra',true,'2022-01-01');
+INSERT INTO rents(client_id, washer_id, status_rent,create_at)VALUES(1,1,false,"2022-01-01");
+INSERT INTO rents(client_id, washer_id, status_rent,create_at)VALUES(2,2,true,"2022-02-02");
+INSERT INTO rents(client_id, washer_id, status_rent,create_at)VALUES(3,3,false,"2022-03-03");

@@ -8,43 +8,44 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.torres.springboot.backend.washer.models.dao.IClientDao;
-import com.torres.springboot.backend.washer.models.entity.Client;
+import com.torres.springboot.backend.washer.models.dao.IWhaserDao;
+import com.torres.springboot.backend.washer.models.entity.Washer;
 
 @Service
-public class ClientServiceImpl implements IClientService{
-
+public class WasherServiceImpl implements IWasherService{
 	@Autowired
-	private IClientDao clientDao;
+	private IWhaserDao washerDao;
 	
 	@Override
 	@Transactional(readOnly = true)
-	public List<Client> findAll() {
-		return (List<Client>)clientDao.findAll();
+	public List<Washer> findAll() {
+		return (List<Washer>)washerDao.findAll();
 	}
 	
 	@Override
 	@Transactional(readOnly = true)
-	public Page<Client> findAll(Pageable pageable) {
-		return clientDao.findAll(pageable);
+	public Page<Washer> findAll(Pageable pageable) {
+		return washerDao.findAll(pageable);
 	}
-	
+
 	@Override
 	@Transactional(readOnly = true)
-	public Client finById(Long id) {
-		return clientDao.findById(id).orElse(null);
+	public Washer finById(Long id) {
+		return washerDao.findById(id).orElse(null);
 	}
-	
+
 	@Override
 	@Transactional
-	public Client save(Client client) {
-		return clientDao.save(client);
+	public Washer save(Washer washer) {
+		return washerDao.save(washer);
 	}
-	
+
 	@Override
 	@Transactional
 	public void delete(Long id) {
-		clientDao.deleteById(id);
+		washerDao.deleteById(id);
 	}
+	
+	
 
 }

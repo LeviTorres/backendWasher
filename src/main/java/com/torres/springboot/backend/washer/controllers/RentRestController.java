@@ -26,59 +26,58 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.torres.springboot.backend.washer.models.entity.Client;
-import com.torres.springboot.backend.washer.models.services.IClientService;
+import com.torres.springboot.backend.washer.models.entity.Rent;
+import com.torres.springboot.backend.washer.models.entity.Washer;
+import com.torres.springboot.backend.washer.models.services.IRentService;
 
-@CrossOrigin(origins= {"http://localhost:4000"})
+@CrossOrigin(origins = {"http://localhost:4000"})
 @RestController
 @RequestMapping("/api")
-public class ClientRestController {
+public class RentRestController {
 	
 	@Autowired
-	private IClientService clientService;
+	private IRentService rentService;
 	
-	@GetMapping("/clients")
-	public List<Client> index(){
-		return clientService.findAll();
+	@GetMapping("/rents")
+	public List<Rent> index(){
+		return rentService.findAll();
 	}
 	
-	@GetMapping("/clients/page/{page}")
-	public Page<Client> index(@PathVariable Integer page){
+	@GetMapping("/rents/page/{page}")
+	public Page<Rent> index(@PathVariable Integer page){
 		Pageable pageable = PageRequest.of(page, 4);
-		return clientService.findAll(pageable);
+		return rentService.findAll(pageable);
 	}
 	
-	@GetMapping("/clients/{id}")
+	@GetMapping("/rents/{id}")
 	public ResponseEntity<?> show(@PathVariable Long id){
-		Client client = null;
-		Map<String,Object> response = new HashMap<>();
+		Rent rent = null;
+		
+		Map<String, Object> response = new HashMap<>();
+		
 		try {
-			client = clientService.finById(id);
-		}catch(DataAccessException e) {
+			rent = rentService.findById(id);
+		} catch (DataAccessException e) {
 			response.put("message", "Error when querying the database");
 			response.put("error", e.getMessage().concat(": ").concat(e.getMostSpecificCause().getMessage()));
 			return new ResponseEntity<Map<String,Object>>(response,HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 		
-		if(client == null) {
-			response.put("message", "The Client ID: ".concat(id.toString().concat(" does not exist in the database")));
+		if(rent == null) {
+			response.put("message", "The Rent ID: ".concat(id.toString().concat(" does not exist in the database")));
 			return new ResponseEntity<Map<String,Object>>(response,HttpStatus.NOT_FOUND);
 		}
-		return new ResponseEntity<Client>(client, HttpStatus.OK);
+		
+		return new ResponseEntity<Rent>(rent, HttpStatus.OK);
 	}
 	
-	@PostMapping("/clients")
-	public ResponseEntity<?> create(@Valid @RequestBody Client client, BindingResult result) {
+	@PostMapping("/rents")
+	public ResponseEntity<?> create(@Valid @RequestBody Rent rent, BindingResult result){
+		Rent rentNew = null;
 		
-		Client clientNew = null;
 		Map<String,Object> response = new HashMap<>();
 		
 		if(result.hasErrors()) {
-			
-			/*List<String> errors = new ArrayList<String>();
-			for(FieldError err: result.getFieldErrors()) {
-				errors.add("El campo '" + err.getField() + "' "+ err.getDefaultMessage());
-			}*/
-			
 			List<String> errors = result.getFieldErrors()
 					.stream()
 					.map(err -> {
@@ -91,31 +90,26 @@ public class ClientRestController {
 		}
 		
 		try {
-			clientNew = clientService.save(client);
-		}catch(DataAccessException e) {
+			rentNew = rentService.save(rent);
+		} catch (DataAccessException e) {
 			response.put("message", "Error when performing insert to database");
 			response.put("error", e.getMessage().concat(": ").concat(e.getMostSpecificCause().getMessage()));
 			return new ResponseEntity<Map<String,Object>>(response,HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 		
-		response.put("message", "The client has been created successfully");
-		response.put("client", clientNew);
+		response.put("message", "The rent has been created successfully");
+		response.put("rent", rentNew);
 		return new ResponseEntity<Map<String,Object>>(response, HttpStatus.CREATED);
 	}
 	
-	@PutMapping("/clients/{id}")
-	public ResponseEntity<?> update(@Valid @RequestBody Client client, BindingResult result, @PathVariable Long id ) {
-		Client clientActual = clientService.finById(id);
-		Client clientUpdated = null;
-		Map<String,Object> response = new HashMap<>();
+	@PutMapping("/rents/{id}")
+	public ResponseEntity<?> update(@Valid @RequestBody Rent rent, BindingResult result, @PathVariable Long id){
+		Rent rentActual = rentService.findById(id);
+		Rent rentUpdated = null;
+		
+		Map<String, Object> response = new HashMap<>();
 		
 		if(result.hasErrors()) {
-			
-			/*List<String> errors = new ArrayList<String>();
-			for(FieldError err: result.getFieldErrors()) {
-				errors.add("El campo '" + err.getField() + "' "+ err.getDefaultMessage());
-			}*/
-			
 			List<String> errors = result.getFieldErrors()
 					.stream()
 					.map(err -> {
@@ -127,51 +121,53 @@ public class ClientRestController {
 			return new ResponseEntity<Map<String,Object>>(response,HttpStatus.BAD_REQUEST);
 		}
 		
-		if(clientActual == null) {
-			response.put("message", " Error: Cannot be edited, the Client ID ".concat(id.toString().concat(" does not exist in the database")));
+		if(rentActual == null) {
+			response.put("message", " Error: Cannot be edited, the Rent ID ".concat(id.toString().concat(" does not exist in the database")));
 			return new ResponseEntity<Map<String,Object>>(response,HttpStatus.NOT_FOUND);
 		}
 		
 		try {
-		clientActual.setName(client.getName());
-		clientActual.setLastname(client.getLastname());
-		clientActual.setEmail(client.getEmail());
-		clientActual.setPhone(client.getPhone());
-		clientActual.setPhone1(client.getPhone1());
-		clientActual.setStreet(client.getStreet());
-		clientActual.setHouseNumber(client.getHouseNumber());
-		clientActual.setSuburb(client.getSuburb());
-		clientActual.setPostalCode(client.getPostalCode());
-		clientActual.setCreateAt(client.getCreateAt());
-		
-		clientUpdated = clientService.save(clientActual);
+			rentActual.setStatusRent(rent.getStatusRent());
+			rentActual.setCreateAt(rent.getCreateAt());
+			rentActual.setClient(rent.getClient());
+			rentActual.setWasher(rent.getWasher());
+			
+			rentUpdated = rentService.save(rentActual);
 		}catch(DataAccessException e) {
-			response.put("message", "Error updating client in database");
+			response.put("message", "Error updating washer in database");
 			response.put("error", e.getMessage().concat(": ").concat(e.getMostSpecificCause().getMessage()));
 			return new ResponseEntity<Map<String,Object>>(response,HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 		
-		response.put("message", "The client has been created successfully");
-		response.put("client", clientUpdated);
+		response.put("message", "The rent has been created successfully");
+		response.put("rent", rentUpdated);
 		
 		return new ResponseEntity<Map<String,Object>>(response, HttpStatus.CREATED);
 	}
 	
-	@DeleteMapping("/clients/{id}")
-	public ResponseEntity<?>  delete(@PathVariable Long id) {
+	@DeleteMapping("/rents/{id}")
+	public ResponseEntity<?> delete(@PathVariable Long id){
 		Map<String,Object> response = new HashMap<>();
-		try {
-			
-			clientService.delete(id);
-			
-		}catch(DataAccessException e) {
-			response.put("message", "Error removing customer from database");
+		
+		try {			
+			rentService.delete(id);
+		} catch (DataAccessException e) {
+			response.put("message", "Error removing rent from database");
 			response.put("error", e.getMessage().concat(": ").concat(e.getMostSpecificCause().getMessage()));
 			return new ResponseEntity<Map<String,Object>>(response,HttpStatus.INTERNAL_SERVER_ERROR);
 		}
-		response.put("message", "The client has been removed successfully");
+		
+		response.put("message", "The rent has been removed successfully");
 		return new ResponseEntity<Map<String,Object>>(response, HttpStatus.OK);
 	}
 	
+	@GetMapping("/rents/clients")
+	public List<Client> listClients(){
+		return rentService.findAllClients();
+	}
 	
+	@GetMapping("/rents/washers")
+	public List<Washer> listWashers(){
+		return rentService.findAllWasher();
+	}
 }
